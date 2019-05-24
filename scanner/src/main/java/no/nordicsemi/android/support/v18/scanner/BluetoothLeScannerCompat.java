@@ -284,7 +284,9 @@ public abstract class BluetoothLeScannerCompat {
 	 */
 	@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 	public final void stopScan(@NonNull final Context context,
-							   @NonNull final PendingIntent callbackIntent) {
+							   @NonNull final PendingIntent callbackIntent,
+							   @NonNull final List<ScanFilter> filters,
+							   @NonNull final ScanSettings settings) {
 		//noinspection ConstantConditions
 		if (callbackIntent == null) {
 			throw new IllegalArgumentException("callbackIntent is null");
@@ -293,7 +295,7 @@ public abstract class BluetoothLeScannerCompat {
 		if (context == null) {
 			throw new IllegalArgumentException("context is null");
 		}
-		stopScanInternal(context, callbackIntent);
+		stopScanInternal(context, callbackIntent, filters, settings);
 	}
 
 	/**
@@ -319,7 +321,9 @@ public abstract class BluetoothLeScannerCompat {
 	 */
 	@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 	/* package */ abstract void stopScanInternal(@NonNull Context context,
-												 @NonNull PendingIntent callbackIntent);
+												 @NonNull PendingIntent callbackIntent,
+												 @NonNull List<ScanFilter> filters,
+												 @NonNull ScanSettings settings);
 
 	/**
 	 * Flush pending batch scan results stored in Bluetooth controller. This will return Bluetooth

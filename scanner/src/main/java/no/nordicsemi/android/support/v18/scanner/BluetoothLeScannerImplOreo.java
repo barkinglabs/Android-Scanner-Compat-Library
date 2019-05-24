@@ -116,7 +116,9 @@ import java.util.List;
 
 	@RequiresPermission(Manifest.permission.BLUETOOTH_ADMIN)
 	/* package */ void stopScanInternal(@NonNull final Context context,
-										@NonNull final PendingIntent callbackIntent) {
+										@NonNull final PendingIntent callbackIntent,
+										final List<ScanFilter> filters,
+										final ScanSettings settings) {
 		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		BluetoothLeUtils.checkAdapterStateOn(adapter);
 
@@ -124,7 +126,7 @@ import java.util.List;
 		if (scanner == null)
 			throw new IllegalStateException("BT le scanner not available");
 
-		final PendingIntent pendingIntent = createStoppingPendingIntent(context, callbackIntent);
+		final PendingIntent pendingIntent = createStoppingPendingIntent(context, callbackIntent, filters, settings);
 		scanner.stopScan(pendingIntent);
 
 		synchronized (wrappers) {
@@ -135,6 +137,25 @@ import java.util.List;
 			// despite the fact that reports will eventually stop being broadcast.
 			wrappers.put(callbackIntent, null);
 		}
+	}
+
+	private void addIntentExtras(Intent intent,
+								 final List<ScanFilter> filters,
+								 final ScanSettings settings,
+								 final PendingIntent callbackIntent) {
+		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+		// The caller's callbackIntent will be used to send the intent to the app
+		intent.putExtra(PendingIntentReceiver.EXTRA_PENDING_INTENT, callbackIntent);
+		// The following extras will be used to filter and batch data if needed,
+		// that is when ScanSettings.Builder#use[...]IfSupported were called with false.
+		// Only native classes may be used here, as they are delivered to another application.
+		intent.putParcelableArrayListExtra(PendingIntentReceiver.EXTRA_FILTERS, toNativeScanFilters(filters));
+		intent.putExtra(PendingIntentReceiver.EXTRA_SETTINGS, toNativeScanSettings(adapter, settings, true));
+		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_BATCHING, settings.getUseHardwareBatchingIfSupported());
+		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_FILTERING, settings.getUseHardwareFilteringIfSupported());
+		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_CALLBACK_TYPES, settings.getUseHardwareCallbackTypesIfSupported());
+		intent.putExtra(PendingIntentReceiver.EXTRA_MATCH_MODE, settings.getMatchMode());
+		intent.putExtra(PendingIntentReceiver.EXTRA_NUM_OF_MATCHES, settings.getNumOfMatches());
 	}
 
 	/**
@@ -151,28 +172,12 @@ import java.util.List;
 													  @NonNull final ScanSettings settings,
 													  @NonNull final Context context,
 													  @NonNull final PendingIntent callbackIntent) {
-		// The PendingIntent ID is derived from the user's callbackIntent.
 		final int id = 0;
 
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
 		intent.setAction(PendingIntentReceiver.ACTION);
-
-		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		// The caller's callbackIntent will be used to send the intent to the app
-		intent.putExtra(PendingIntentReceiver.EXTRA_PENDING_INTENT, callbackIntent);
-		// The following extras will be used to filter and batch data if needed,
-		// that is when ScanSettings.Builder#use[...]IfSupported were called with false.
-		// Only native classes may be used here, as they are delivered to another application.
-		/*
-		intent.putParcelableArrayListExtra(PendingIntentReceiver.EXTRA_FILTERS, toNativeScanFilters(filters));
-		intent.putExtra(PendingIntentReceiver.EXTRA_SETTINGS, toNativeScanSettings(adapter, settings, true));
-		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_BATCHING, settings.getUseHardwareBatchingIfSupported());
-		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_FILTERING, settings.getUseHardwareFilteringIfSupported());
-		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_CALLBACK_TYPES, settings.getUseHardwareCallbackTypesIfSupported());
-		intent.putExtra(PendingIntentReceiver.EXTRA_MATCH_MODE, settings.getMatchMode());
-		intent.putExtra(PendingIntentReceiver.EXTRA_NUM_OF_MATCHES, settings.getNumOfMatches());
-		*/
+		addIntentExtras(intent, filters, settings, callbackIntent);
 
 		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
@@ -187,15 +192,15 @@ import java.util.List;
 	 */
 	@NonNull
 	private PendingIntent createStoppingPendingIntent(@NonNull final Context context,
-													  @NonNull final PendingIntent callbackIntent) {
-		// The PendingIntent ID is derived from the user's callbackIntent.
-		Log.i("BluetoothLeScannerImplOreo", "Creating stopping pending intent with id=0");
+													  @NonNull final PendingIntent callbackIntent,
+													  final List<ScanFilter> filters,
+													  final ScanSettings settings) {
 		final int id = 0;
 
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
 		intent.setAction(PendingIntentReceiver.ACTION);
-		intent.putExtra(PendingIntentReceiver.EXTRA_PENDING_INTENT, callbackIntent);
+		addIntentExtras(intent, filters, settings, callbackIntent);
 
 		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
