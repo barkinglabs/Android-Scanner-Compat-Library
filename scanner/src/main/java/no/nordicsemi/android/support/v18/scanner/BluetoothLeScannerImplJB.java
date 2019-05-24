@@ -174,7 +174,9 @@ import java.util.Map;
 	@Override
 	@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 	/* package */ void stopScanInternal(@NonNull final Context context,
-										@NonNull final PendingIntent callbackIntent) {
+										@NonNull final PendingIntent callbackIntent,
+										@NonNull final List<ScanFilter> filters,
+										@NonNull final ScanSettings settings) {
 		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		BluetoothLeUtils.checkAdapterStateOn(adapter);
 
