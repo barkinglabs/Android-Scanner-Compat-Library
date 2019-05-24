@@ -164,6 +164,7 @@ import java.util.List;
 		// The following extras will be used to filter and batch data if needed,
 		// that is when ScanSettings.Builder#use[...]IfSupported were called with false.
 		// Only native classes may be used here, as they are delivered to another application.
+		/*
 		intent.putParcelableArrayListExtra(PendingIntentReceiver.EXTRA_FILTERS, toNativeScanFilters(filters));
 		intent.putExtra(PendingIntentReceiver.EXTRA_SETTINGS, toNativeScanSettings(adapter, settings, true));
 		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_BATCHING, settings.getUseHardwareBatchingIfSupported());
@@ -171,6 +172,7 @@ import java.util.List;
 		intent.putExtra(PendingIntentReceiver.EXTRA_USE_HARDWARE_CALLBACK_TYPES, settings.getUseHardwareCallbackTypesIfSupported());
 		intent.putExtra(PendingIntentReceiver.EXTRA_MATCH_MODE, settings.getMatchMode());
 		intent.putExtra(PendingIntentReceiver.EXTRA_NUM_OF_MATCHES, settings.getNumOfMatches());
+		*/
 
 		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
@@ -193,8 +195,9 @@ import java.util.List;
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
 		intent.setAction(PendingIntentReceiver.ACTION);
+		intent.putExtra(PendingIntentReceiver.EXTRA_PENDING_INTENT, callbackIntent);
 
-		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 
 	@NonNull
