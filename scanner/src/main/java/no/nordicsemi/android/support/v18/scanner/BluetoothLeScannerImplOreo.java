@@ -152,7 +152,7 @@ import java.util.List;
 													  @NonNull final Context context,
 													  @NonNull final PendingIntent callbackIntent) {
 		// The PendingIntent ID is derived from the user's callbackIntent.
-		final int id = callbackIntent.hashCode();
+		final int id = 0;
 
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
