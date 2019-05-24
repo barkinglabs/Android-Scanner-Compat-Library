@@ -26,6 +26,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
+import android.util.Log;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.content.Context;
 import android.content.Intent;
@@ -186,7 +187,8 @@ import java.util.List;
 	private PendingIntent createStoppingPendingIntent(@NonNull final Context context,
 													  @NonNull final PendingIntent callbackIntent) {
 		// The PendingIntent ID is derived from the user's callbackIntent.
-		final int id = callbackIntent.hashCode();
+		Log.i("BluetoothLeScannerImplOreo", "Creating stopping pending intent with id=0");
+		final int id = 0;
 
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
