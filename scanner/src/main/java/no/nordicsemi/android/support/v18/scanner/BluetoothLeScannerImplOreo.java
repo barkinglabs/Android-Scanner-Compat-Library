@@ -200,7 +200,7 @@ import java.util.List;
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
 		intent.setAction(PendingIntentReceiver.ACTION);
-		addIntentExtras(intent, filters, settings, callbackIntent);
+//		addIntentExtras(intent, filters, settings, callbackIntent);
 
 		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
