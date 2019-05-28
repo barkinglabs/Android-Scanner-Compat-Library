@@ -150,8 +150,8 @@ import java.util.List;
 													  @NonNull final ScanSettings settings,
 													  @NonNull final Context context,
 													  @NonNull final PendingIntent callbackIntent) {
-		// The PendingIntent ID is derived from the user's callbackIntent.
-		final int id = callbackIntent.hashCode();
+		// HACK(wcauchois): Use a consistent ID so our stopping intent actually works.
+		final int id = 0;
 
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
@@ -185,14 +185,14 @@ import java.util.List;
 	@NonNull
 	private PendingIntent createStoppingPendingIntent(@NonNull final Context context,
 													  @NonNull final PendingIntent callbackIntent) {
-		// The PendingIntent ID is derived from the user's callbackIntent.
-		final int id = callbackIntent.hashCode();
+		// HACK(wcauchois): Use a consistent ID so our stopping intent actually works.
+		final int id = 0;
 
 		// Since Android 8 it has to be an explicit intent
 		final Intent intent = new Intent(context, PendingIntentReceiver.class);
 		intent.setAction(PendingIntentReceiver.ACTION);
 
-		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 
 	@NonNull
