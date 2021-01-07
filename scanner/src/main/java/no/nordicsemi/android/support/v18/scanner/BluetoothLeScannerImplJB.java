@@ -31,15 +31,16 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 
 
 @SuppressWarnings("deprecation")
@@ -58,7 +59,6 @@ import java.util.Map;
 	private long powerSaveScanInterval;
 
 	private final Runnable powerSaveSleepTask = new Runnable() {
-		@SuppressWarnings("deprecation")
 		@Override
 		@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 		public void run() {
@@ -71,7 +71,6 @@ import java.util.Map;
 	};
 
 	private final Runnable powerSaveScanTask = new Runnable() {
-		@SuppressWarnings("deprecation")
 		@Override
 		@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 		public void run() {
@@ -87,13 +86,11 @@ import java.util.Map;
 
 	@Override
 	@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
-	@SuppressWarnings("deprecation")
 	/* package */ void startScanInternal(@NonNull final List<ScanFilter> filters,
 										 @NonNull final ScanSettings settings,
 										 @NonNull final ScanCallback callback,
 										 @NonNull final Handler handler) {
 		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		BluetoothLeUtils.checkAdapterStateOn(adapter);
 
 		boolean shouldStart;
 
@@ -125,7 +122,6 @@ import java.util.Map;
 	@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 	/* package */ void stopScanInternal(@NonNull final ScanCallback callback) {
 		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		BluetoothLeUtils.checkAdapterStateOn(adapter);
 
 		boolean shouldStop;
 		ScanCallbackWrapper wrapper;
@@ -160,9 +156,6 @@ import java.util.Map;
 										 @NonNull final ScanSettings settings,
 										 @NonNull final Context context,
 										 @NonNull final PendingIntent callbackIntent) {
-		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		BluetoothLeUtils.checkAdapterStateOn(adapter);
-
 		final Intent service = new Intent(context, ScannerService.class);
 		service.putParcelableArrayListExtra(ScannerService.EXTRA_FILTERS, new ArrayList<>(filters));
 		service.putExtra(ScannerService.EXTRA_SETTINGS, settings);
@@ -175,9 +168,6 @@ import java.util.Map;
 	@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 	/* package */ void stopScanInternal(@NonNull final Context context,
 										@NonNull final PendingIntent callbackIntent) {
-		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		BluetoothLeUtils.checkAdapterStateOn(adapter);
-
 		final Intent service = new Intent(context, ScannerService.class);
 		service.putExtra(ScannerService.EXTRA_PENDING_INTENT, callbackIntent);
 		service.putExtra(ScannerService.EXTRA_START, false);
@@ -187,8 +177,6 @@ import java.util.Map;
 	@Override
 	@RequiresPermission(Manifest.permission.BLUETOOTH)
 	public void flushPendingScanResults(@NonNull final ScanCallback callback) {
-		final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		BluetoothLeUtils.checkAdapterStateOn(adapter);
 		//noinspection ConstantConditions
 		if (callback == null) {
 			throw new IllegalArgumentException("callback cannot be null!");

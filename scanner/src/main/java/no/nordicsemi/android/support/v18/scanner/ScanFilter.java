@@ -27,12 +27,13 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Criteria for filtering result from Bluetooth LE scans. A {@link ScanFilter} allows clients to
@@ -182,11 +183,13 @@ public final class ScanFilter implements Parcelable {
 					final byte[] serviceData = new byte[serviceDataLength];
 					in.readByteArray(serviceData);
 					if (in.readInt() == 0) {
+						//noinspection ConstantConditions
 						builder.setServiceData(serviceDataUuid, serviceData);
 					} else {
 						final int serviceDataMaskLength = in.readInt();
 						final byte[] serviceDataMask = new byte[serviceDataMaskLength];
 						in.readByteArray(serviceDataMask);
+						//noinspection ConstantConditions
 						builder.setServiceData(serviceDataUuid, serviceData, serviceDataMask);
 					}
 				}
@@ -517,13 +520,11 @@ public final class ScanFilter implements Parcelable {
 		 *
 		 * @throws IllegalArgumentException If {@code serviceDataUuid} is null.
 		 */
-		public Builder setServiceData(@Nullable final ParcelUuid serviceDataUuid,
+		public Builder setServiceData(@NonNull final ParcelUuid serviceDataUuid,
 									  @Nullable final byte[] serviceData) {
-			if (serviceDataUuid == null && serviceData != null) {
+			//noinspection ConstantConditions
+			if (serviceDataUuid == null) {
 				throw new IllegalArgumentException("serviceDataUuid is null!");
-			}
-			if (serviceDataUuid != null && serviceData == null) {
-				throw new IllegalArgumentException("serviceData is null!");
 			}
 			this.serviceDataUuid = serviceDataUuid;
 			this.serviceData = serviceData;
@@ -541,10 +542,11 @@ public final class ScanFilter implements Parcelable {
 		 *             {@code serviceDataMask} is {@code null} while {@code serviceData} is not or
 		 *             {@code serviceDataMask} and {@code serviceData} has different length.
 		 */
-		public Builder setServiceData(@Nullable final ParcelUuid serviceDataUuid,
+		public Builder setServiceData(@NonNull final ParcelUuid serviceDataUuid,
 									  @Nullable final byte[] serviceData,
 									  @Nullable final byte[] serviceDataMask) {
-			if (serviceDataUuid == null && serviceData != null) {
+			//noinspection ConstantConditions
+			if (serviceDataUuid == null) {
 				throw new IllegalArgumentException("serviceDataUuid is null");
 			}
 			if (serviceDataMask != null) {
